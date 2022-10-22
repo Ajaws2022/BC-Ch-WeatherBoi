@@ -14,18 +14,21 @@ var city;
 
 var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + 'Riverside' + "&appid=" + APIKey;
 
-var pastSearches = document.getElementById('.pastSearches')
+var pastSearches = document.getElementsByClassName('.pastSearches')
 
+pastSearches.textContent = 'Im alive';
 
+console.log(pastSearches.textContent)
 
 function getApi(queryURL) {
     fetch(queryURL)
       .then(function (response) {
         console.log(response);
         if (response.status === 200) {
-          pastSearches.textContent = response.status;
+          pastSearches.textContent = `${response.status}`;
         }
-        return response.json();
+        console.log(response.json());
+        return response.body;
     });
   }
 
