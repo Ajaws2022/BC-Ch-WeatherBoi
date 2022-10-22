@@ -1,8 +1,8 @@
 // get the weather url and set it as a variable
 
-// create a function that combines the search word with the url using the split method
 // append the results to the forecast display and create a button with the search word
-// within the function set the search in local storage so that it can be shown later
+
+// within the function set the query as a button with a city name so that it can be called later
 // 
 var inputCity = document.getElementById('#cityName')
 
@@ -12,6 +12,23 @@ var APIKey = '7cb92b27a8129439217e5257f292a3e9';
 
 var city;
 
-var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey;
+var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + 'Riverside' + "&appid=" + APIKey;
+
+var pastSearches = document.getElementById('.pastSearches')
 
 
+
+function getApi(queryURL) {
+    fetch(queryURL)
+      .then(function (response) {
+        console.log(response);
+        if (response.status === 200) {
+          pastSearches.textContent = response.status;
+        }
+        return response.json();
+    });
+  }
+
+  getApi(queryURL)
+
+  console.log(pastSearches.textContent)
