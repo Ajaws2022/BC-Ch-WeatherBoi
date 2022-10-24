@@ -1,0 +1,36 @@
+.header {
+    text-align: center;
+}
+
+.mainBlock {
+    display: flex;
+}
+
+#searchArea {
+    width: 30%;
+    margin: 15px;
+}
+
+#resultBox {
+    text-transform: capitalize;
+    width: 60%;
+    margin: 15px;
+    margin: 10px;
+}  
+
+.describe {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+}
+
+.humidity {
+    margin: 10px;
+}
+.wind {
+    margin: 10px; 
+}
+
+.temp{
+    margin: 10px;
+}
