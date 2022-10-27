@@ -4,6 +4,8 @@
 
 .mainBlock {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 #searchArea {
@@ -33,4 +35,20 @@
 
 .temp{
     margin: 10px;
+}
+
+.forecast {
+    display: flex;
+    flex-wrap: wrap;
+    width: 60%;
+    align-items: center;
+    justify-self: center;
+}
+.forecast h3{
+    width: 100%;
+}
+
+.dayBox{
+    display: block;
+    width: 20%;
 }
