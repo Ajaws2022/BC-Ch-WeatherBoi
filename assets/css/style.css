@@ -20,6 +20,10 @@
     margin: 10px;
 }  
 
+.forecast{
+    text-transform: capitalize;
+}
+
 .describe {
     display: flex;
     align-items: center;

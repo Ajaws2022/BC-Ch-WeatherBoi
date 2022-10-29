@@ -61,9 +61,9 @@ function fetchWeather(){
 }
 
 function fetchForecast(){
-  var inputCity = document.getElementById('cityName').value;
   
-  var forecastURL = "http://api.openweathermap.org/data/2.5/forecast?q="+inputCity+"&units=imperial&cnt=5&appid="+APIKey
+  
+  var forecastURL = "https://api.openweathermap.org/data/3.0/onecall?lat=" + lati + "&lon=" + longi + "&units=imperial&exclude=current,minutely,hourly,alerts&appid=" + APIKey
 
   fetch(
     forecastURL
@@ -74,41 +74,62 @@ function fetchForecast(){
 var lati;
 
 var longi;
+function findCoords(data){
 
-function getCoords(data){
+  let location = data[0]
+   const lat = location.lat;
+   const long = location.lon;
+   lati = lat;
+   longi = long;
+   console.log(lati, longi)
+   fetchForecast(data)
+}
+
+function getCoords(){
   var inputCity = document.getElementById('cityName').value;
   var geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
   fetch(
     geoCode
   ).then((response) => response.json())
-   let { lat } = data
-   let { long } = data
-   lati.value = lat;
-   longi.value = long;
+  // .then((data) => console.log(data[0].lon))
+  .then((data) => findCoords(data))
+
+  
 }
+
+
+
+
 
   function createForecast(data){
   //  for(i=0; i<=5; i++){
       var dayBox = document.getElementsByClassName('dayBox')
 
-      console.log(data.list)
+      // console.log(data.daily[0])
 
       for(i=0; i<5; i++){
         
-        console.log(data.list[i]);
-        var forecastDay = data.list[i];
+        console.log(data.daily[i + 1]);
+        var forecastDay = data.daily[i + 1];
         let { icon, description} = forecastDay.weather[0];
-        let { temp } = forecastDay.main;
-        let { humidity } = forecastDay.main;
-        let { speed } = forecastDay.wind;
+        let { day } = forecastDay.temp;
+        let { humidity } = forecastDay;
+        let { wind_speed } = forecastDay;
         let { dt } = forecastDay
-        console.log(temp,humidity,speed,description,icon)
+        console.log(day,humidity,wind_speed,description,icon)
         console.log(dayBox[i])
         let unixStamp = dt; 
         let milliseconds = unixStamp * 1000;
         let dateObject = new Date(milliseconds)
         let trueDate = dateObject.toLocaleDateString("en-US")
         dayBox[i].querySelector('h3').innerHTML= trueDate;
+        dayBox[i].querySelector("img").src = "http://openweathermap.org/img/wn/" + icon + 
+        ".png";
+        dayBox[i].querySelector(".desc").innerHTML = description;
+        dayBox[i].querySelector(".dayTemp").innerHTML = "Temp: " + day;
+        dayBox[i].querySelector(".dayWind").innerHTML = "Wind Speed: " + wind_speed + "mph";
+        dayBox[i].querySelector(".dayHum").innerHTML = "Humidity: " + humidity + "%";
+
         console.log(trueDate)
       }
 
@@ -121,5 +142,6 @@ function searchByCity(){
 }
 
 search.addEventListener('click', searchByCity);
-search.addEventListener('click', fetchForecast);
+search.addEventListener('click', getCoords);
+// search.addEventListener('click', fetchForecast);
 
