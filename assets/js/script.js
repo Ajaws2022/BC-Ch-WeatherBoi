@@ -9,13 +9,14 @@
 var search = document.getElementById('searchButton')
 
 var APIKey = '7cb92b27a8129439217e5257f292a3e9';
+
 var currWeather = document.querySelector(".weather")
+
 var city = document.getElementById('cityName').value;
-
-
 
 var pastSearches = document.getElementById('pastSearches') 
 
+var cityBtn = document.querySelectorAll('.cityBtn')
 // function getApi(queryURL) {
 //     fetch(queryURL)
 //       .then(function (response) {
@@ -27,9 +28,20 @@ var pastSearches = document.getElementById('pastSearches')
 //          return response.body;
 //     });
 //   }
-
 //   getApi(queryURL)
+function addButton(){
+  var btnName = document.getElementById('cityName').value;
+  let btn = document.createElement('button');
+  btn.innerHTML = btnName;
+  btn.type = "submit";
+  btn.className = "cityBtn"
+  document.querySelector('#pastSearches').appendChild(btn)
+  // for(i = 0; i < cityBtn.length; i++){
+  //   cityBtn[i].addEventListener('click', getCoordByBtn)
+  // }
+}
 
+// Gets the weather for a single day
 function fetchWeather(){
   var inputCity = document.getElementById('cityName').value;
   
@@ -58,22 +70,31 @@ function fetchWeather(){
 
     }
 
+    inputCity = "";
 }
 
-function fetchForecast(){
-  
-  
-  var forecastURL = "https://api.openweathermap.org/data/3.0/onecall?lat=" + lati + "&lon=" + longi + "&units=imperial&exclude=current,minutely,hourly,alerts&appid=" + APIKey
-
+// retrieves the geocode information based on the input value
+function getCoords(){
+  var inputCity = document.getElementById('cityName').value;
+  var geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
   fetch(
-    forecastURL
+    geoCode
   ).then((response) => response.json())
-  .then((data)=> createForecast(data));
-  }
-  
-var lati;
+  .then((data) => findCoords(data))
+}
 
-var longi;
+function getCoordByBtn(event){
+  var inputBtn = event.srcElement.innerHTML;
+  var inputCity = document.getElementById('cityName').value;
+  inputCity = inputBtn;
+  var geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
+  fetch(
+    geoCode
+  ).then((response) => response.json())
+  .then((data) => findCoords(data))
+}
+
+// uses the geo data to get the lat. and lon. values 
 function findCoords(data){
 
   let location = data[0]
@@ -85,23 +106,23 @@ function findCoords(data){
    fetchForecast(data)
 }
 
-function getCoords(){
-  var inputCity = document.getElementById('cityName').value;
-  var geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
-  fetch(
-    geoCode
-  ).then((response) => response.json())
-  // .then((data) => console.log(data[0].lon))
-  .then((data) => findCoords(data))
+var lati;
 
+var longi;
+
+// Uses the longitude and latitude values to fetch an 8 day forecast
+function fetchForecast(){
   
+  var forecastURL = "https://api.openweathermap.org/data/3.0/onecall?lat=" + lati + "&lon=" + longi + "&units=imperial&exclude=current,minutely,hourly,alerts&appid=" + APIKey
+
+  fetch(
+    forecastURL
+  ).then((response) => response.json())
+  .then((data)=> createForecast(data));
 }
-
-
-
-
-
-  function createForecast(data){
+  
+// Creates a forecast with needed info based on the retrieved data
+function createForecast(data){
   //  for(i=0; i<=5; i++){
       var dayBox = document.getElementsByClassName('dayBox')
 
@@ -110,6 +131,7 @@ function getCoords(){
       for(i=0; i<5; i++){
         
         console.log(data.daily[i + 1]);
+        // +1 used to avoid current date data since it is displayed separate of the 5 day forecast
         var forecastDay = data.daily[i + 1];
         let { icon, description} = forecastDay.weather[0];
         let { day } = forecastDay.temp;
@@ -118,10 +140,13 @@ function getCoords(){
         let { dt } = forecastDay
         console.log(day,humidity,wind_speed,description,icon)
         console.log(dayBox[i])
+
+        // uses the unix data in the forecast to create a real date
         let unixStamp = dt; 
         let milliseconds = unixStamp * 1000;
         let dateObject = new Date(milliseconds)
         let trueDate = dateObject.toLocaleDateString("en-US")
+
         dayBox[i].querySelector('h3').innerHTML= trueDate;
         dayBox[i].querySelector("img").src = "http://openweathermap.org/img/wn/" + icon + 
         ".png";
@@ -135,13 +160,13 @@ function getCoords(){
 
   }
 
-
-function searchByCity(){
-  var inputCity = document.getElementById('cityName').value;
-  fetchWeather(inputCity)
-}
-
-search.addEventListener('click', searchByCity);
+search.addEventListener('click', fetchWeather);
 search.addEventListener('click', getCoords);
+search.addEventListener('click', addButton);
+document.body.addEventListener( 'click', function ( event ) {
+  if( event.target.className == 'cityBtn' ) {
+    getCoordByBtn;
+  };
+} );
 // search.addEventListener('click', fetchForecast);
 
