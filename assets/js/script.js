@@ -12,7 +12,7 @@ var APIKey = '7cb92b27a8129439217e5257f292a3e9';
 
 var currWeather = document.querySelector(".weather")
 
-var city = document.getElementById('cityName').value;
+// var city = document.getElementById('cityName').value;
 
 var pastSearches = document.getElementById('pastSearches') 
 
@@ -30,22 +30,28 @@ var cityBtn = document.querySelectorAll('.cityBtn')
 //   }
 //   getApi(queryURL)
 function addButton(){
-  var btnName = document.getElementById('cityName').value;
+  let btnName = document.getElementById('cityName').value;
   let btn = document.createElement('button');
   btn.innerHTML = btnName;
   btn.type = "submit";
   btn.className = "cityBtn"
+  // btn.onclick = clearInput;
+  btn.onclick = getCoordByBtn;
+  
   document.querySelector('#pastSearches').appendChild(btn)
-  // for(i = 0; i < cityBtn.length; i++){
-  //   cityBtn[i].addEventListener('click', getCoordByBtn)
-  // }
+  clearInput();
 }
-
+function clearInput(){
+  let getValue = document.getElementById("cityName");
+    if (getValue.value !="") {
+        getValue.value = "";
+    }
+}
 // Gets the weather for a single day
 function fetchWeather(){
-  var inputCity = document.getElementById('cityName').value;
+  let inputCity = document.getElementById('cityName').value;
   
-  var queryURL = 
+  let queryURL = 
   "http://api.openweathermap.org/data/2.5/weather?q="+inputCity+"&units=imperial&appid="+APIKey;
 
   fetch(
@@ -54,11 +60,11 @@ function fetchWeather(){
   .then((data)=> displayWeather(data));
 
     function displayWeather(data){
-       const { name } = data;
-       const { icon, description} = data.weather[0];
-       const { temp } = data.main;
-       const { humidity } = data.main;
-       const { speed } = data.wind;
+       let { name } = data;
+       let { icon, description} = data.weather[0];
+       let { temp } = data.main;
+       let { humidity } = data.main;
+       let { speed } = data.wind;
        console.log(name, icon, description, temp, humidity, speed)
        document.querySelector(".city").innerHTML = "Weather in " + name;
        document.querySelector(".icon").src = "http://openweathermap.org/img/wn/" + icon + 
@@ -68,15 +74,16 @@ function fetchWeather(){
        document.querySelector(".humidity").innerHTML = "Humidity: " + humidity + "%";
        document.querySelector(".wind").innerHTML = "Wind Speed: " + speed + " mph";
 
+       
     }
-
-    inputCity = "";
+    // inputCity = "";
+    
 }
 
 // retrieves the geocode information based on the input value
 function getCoords(){
-  var inputCity = document.getElementById('cityName').value;
-  var geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
+  let inputCity = document.getElementById('cityName').value;
+  let geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
   fetch(
     geoCode
   ).then((response) => response.json())
@@ -84,22 +91,33 @@ function getCoords(){
 }
 
 function getCoordByBtn(event){
-  var inputBtn = event.srcElement.innerHTML;
-  var inputCity = document.getElementById('cityName').value;
+
+  let inputCity = document.getElementById('cityName').value
+  console.log(inputCity)
+  // inputCity = "";
+  console.log(inputCity)
+  var inputBtn = event.target.innerHTML;
+  console.log(inputBtn)
+  
+  // inputCity.remove.value
   inputCity = inputBtn;
-  var geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
+  console.log(inputCity);
+  
+  let geoCode = "http://api.openweathermap.org/geo/1.0/direct?q=" + inputCity + "&limit=1&appid=" +APIKey
+  console.log(geoCode)
   fetch(
     geoCode
   ).then((response) => response.json())
   .then((data) => findCoords(data))
+  .then(fetchWeather())
 }
 
 // uses the geo data to get the lat. and lon. values 
 function findCoords(data){
 
   let location = data[0]
-   const lat = location.lat;
-   const long = location.lon;
+   let lat = location.lat;
+   let long = location.lon;
    lati = lat;
    longi = long;
    console.log(lati, longi)
@@ -130,7 +148,7 @@ function createForecast(data){
 
       for(i=0; i<5; i++){
         
-        console.log(data.daily[i + 1]);
+        // console.log(data.daily[i + 1]);
         // +1 used to avoid current date data since it is displayed separate of the 5 day forecast
         var forecastDay = data.daily[i + 1];
         let { icon, description} = forecastDay.weather[0];
@@ -138,8 +156,8 @@ function createForecast(data){
         let { humidity } = forecastDay;
         let { wind_speed } = forecastDay;
         let { dt } = forecastDay
-        console.log(day,humidity,wind_speed,description,icon)
-        console.log(dayBox[i])
+        // console.log(day,humidity,wind_speed,description,icon)
+        // console.log(dayBox[i])
 
         // uses the unix data in the forecast to create a real date
         let unixStamp = dt; 
@@ -155,7 +173,7 @@ function createForecast(data){
         dayBox[i].querySelector(".dayWind").innerHTML = "Wind Speed: " + wind_speed + "mph";
         dayBox[i].querySelector(".dayHum").innerHTML = "Humidity: " + humidity + "%";
 
-        console.log(trueDate)
+        // console.log(trueDate)
       }
 
   }
@@ -163,10 +181,13 @@ function createForecast(data){
 search.addEventListener('click', fetchWeather);
 search.addEventListener('click', getCoords);
 search.addEventListener('click', addButton);
-document.body.addEventListener( 'click', function ( event ) {
-  if( event.target.className == 'cityBtn' ) {
-    getCoordByBtn;
-  };
-} );
+
+// var prevSearch = document.querySelector('#pastSearches')
+
+// prevSearch.addEventListener( 'click', function (event) {
+//   if( event.target.classList.contains('cityBtn') ) {
+//     getCoordByBtn;
+//   };
+// } );
 // search.addEventListener('click', fetchForecast);
 
